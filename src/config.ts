@@ -51,7 +51,13 @@ export const profileConfig: ProfileConfig = {
 	avatar: "assets/images/avatar.jpg", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
 	name: "winter",
 	bio: "欢迎来到我的博客",
-	links: [],
+	links: [
+		{
+			name: "GitHub",
+			icon: "fa6-brands:github",
+			url: "https://github.com/ouneedtech",
+		},
+	],
 };
 
 export const licenseConfig: LicenseConfig = {
