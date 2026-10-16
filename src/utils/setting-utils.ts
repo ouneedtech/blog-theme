@@ -59,3 +59,42 @@ export function setTheme(theme: LIGHT_DARK_MODE): void {
 export function getStoredTheme(): LIGHT_DARK_MODE {
 	return (localStorage.getItem("theme") as LIGHT_DARK_MODE) || DEFAULT_THEME;
 }
+
+// 字体大小调节 (0.9 ~ 1.2, 默认 1.0)
+export function getFontScale(): number {
+	const stored = localStorage.getItem("font-scale");
+	return stored ? Number.parseFloat(stored) : 1.0;
+}
+
+export function setFontScale(scale: number): void {
+	localStorage.setItem("font-scale", String(scale));
+	const r = document.querySelector(":root") as HTMLElement;
+	if (!r) {
+		return;
+	}
+	r.style.setProperty("--font-scale", String(scale));
+}
+
+// 字体粗细调节 (0 ~ 200, 默认 40, 加到基础字重上)
+export function getFontWeightBoost(): number {
+	const stored = localStorage.getItem("font-weight-boost");
+	return stored ? Number.parseInt(stored, 10) : 40;
+}
+
+export function setFontWeightBoost(boost: number): void {
+	localStorage.setItem("font-weight-boost", String(boost));
+	const r = document.querySelector(":root") as HTMLElement;
+	if (!r) {
+		return;
+	}
+	r.style.setProperty("--font-weight-boost", String(boost));
+}
+
+export function applyFontSettingsToDocument(): void {
+	const r = document.querySelector(":root") as HTMLElement;
+	if (!r) {
+		return;
+	}
+	r.style.setProperty("--font-scale", String(getFontScale()));
+	r.style.setProperty("--font-weight-boost", String(getFontWeightBoost()));
+}

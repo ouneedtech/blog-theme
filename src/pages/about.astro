@@ -1,10 +1,13 @@
 ---
 
 import { getEntry, render } from "astro:content";
+import { Icon } from "astro-icon/components";
 import Markdown from "@components/misc/Markdown.astro";
+import ImageWrapper from "@components/misc/ImageWrapper.astro";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
 import MainGridLayout from "../layouts/MainGridLayout.astro";
+import { profileConfig } from "../config";
 
 const aboutPost = await getEntry("spec", "about");
 
@@ -13,8 +16,42 @@ if (!aboutPost) {
 }
 
 const { Content } = await render(aboutPost);
+const config = profileConfig;
 ---
 <MainGridLayout title={i18n(I18nKey.about)} description={i18n(I18nKey.about)}>
+    <!-- GitHub 风格个人卡片 -->
+    <div class="card-base px-9 py-8 mb-6 relative overflow-hidden">
+        <div class="flex flex-col md:flex-row gap-6 items-center md:items-start">
+            <a href="https://github.com/ouneedtech" target="_blank" rel="me"
+               class="shrink-0 block w-32 h-32 md:w-40 md:h-40 overflow-hidden rounded-2xl active:scale-95 transition">
+                <ImageWrapper src={config.avatar || ""} alt="Avatar of winter" class="w-full h-full object-cover"></ImageWrapper>
+            </a>
+            <div class="flex-1 text-center md:text-left">
+                <div class="flex items-center justify-center md:justify-start gap-3 mb-2">
+                    <h1 class="font-bold text-2xl dark:text-neutral-50 transition">{config.name}</h1>
+                    <a href="https://github.com/ouneedtech" target="_blank" rel="me"
+                       class="btn-regular rounded-lg h-9 gap-2 px-3 font-bold active:scale-95 text-sm inline-flex items-center">
+                        <Icon name="fa6-brands:github" class="text-[1.25rem]"></Icon>
+                        ouneedtech
+                    </a>
+                </div>
+                <div class="text-neutral-500 dark:text-neutral-400 mb-4 transition">{config.bio}</div>
+                <div class="flex flex-wrap gap-2 justify-center md:justify-start">
+                    <a href="https://github.com/ouneedtech?tab=repositories" target="_blank"
+                       class="btn-regular rounded-lg px-4 py-2 text-sm font-medium active:scale-95 inline-flex items-center gap-2">
+                        <Icon name="fa6-solid:book-bookmark" class="text-[1rem]"></Icon>
+                        仓库
+                    </a>
+                    <a href="https://github.com/ouneedtech?tab=stars" target="_blank"
+                       class="btn-regular rounded-lg px-4 py-2 text-sm font-medium active:scale-95 inline-flex items-center gap-2">
+                        <Icon name="fa6-solid:star" class="text-[1rem]"></Icon>
+                        收藏
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 原有 About 内容 -->
     <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32">
         <div class="card-base z-10 px-9 py-6 relative w-full ">
             <Markdown class="mt-2">
