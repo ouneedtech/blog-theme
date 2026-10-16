@@ -27,3 +27,10 @@
 - **.github/workflows/deploy.yml**: push 到 main 分支自动构建并部署到 Cloudflare Pages
 - **Secrets**: CLOUDFLARE_API_TOKEN + CLOUDFLARE_ACCOUNT_ID 已通过 API 写入仓库
 - **验证**: Actions 运行成功，push 即自动上线，无需手动 wrangler
+
+## 2026-10-16 博客优化
+- Footer "Powered by Astro" 改为 "Powered by Muse"
+- 修复 astro.config.mjs 的 site 域名：fuwari.vercel.app → blog.ouneed.kdns.fr（文章底部 License 链接恢复正常）
+- About 页新增 GitHub 风格个人卡片（头像 + ouneedtech + 仓库/收藏按钮）
+- 字体优化：引入 Noto Sans TC（Google Fonts），字体栈增加 PingFang TC / Microsoft JhengHei  fallback
+- 设置面板新增「字體大小」（90%~125%）和「字體粗細」（400~600）滑动条，localStorage 持久化，默认字重 440

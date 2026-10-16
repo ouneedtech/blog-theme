@@ -103,7 +103,7 @@ const bannerOffset =
 		<meta name="generator" content={Astro.generator} />
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css2?family=Huninn:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
 		{favicons.map(favicon => (
 			<link rel="icon"
 				  href={favicon.src.startsWith('/') ? url(favicon.src) : favicon.src}
@@ -173,7 +173,7 @@ const bannerOffset =
 	html {
 		font-size: calc(16px * var(--font-scale, 1));
 	}
-	body {
+	body, .prose, .prose p, .prose li, article p, article li {
 		font-weight: calc(400 + var(--font-weight-boost, 40));
 	}
 	.enable-banner.is-home #banner-wrapper {
