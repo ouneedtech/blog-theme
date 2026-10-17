@@ -11,14 +11,13 @@
   <span id="lang-toggle-label" class="text-sm font-bold">繁</span>
 </button>
 
-<script is:inline src="https://cdn.jsdelivr.net/npm/opencc-js@1.0.5/dist/umd/full.js"></script>
 <script is:inline>
 (function () {
   var STORAGE_KEY = "blog-lang-pref"; // 'tw' | 'cn'
+  var CDN_URL = "https://cdn.jsdelivr.net/npm/opencc-js@1.0.5/dist/umd/full.js";
   var label = document.getElementById("lang-toggle-label");
   var btn = document.getElementById("lang-toggle");
 
-  // 哪些元素不轉換：程式碼區塊、pre、script、style
   var SKIP_TAGS = { SCRIPT: 1, STYLE: 1, PRE: 1, CODE: 1, TEXTAREA: 1 };
 
   function shouldSkip(node) {
@@ -30,7 +29,6 @@
     return false;
   }
 
-  // 收集需要轉換的文字節點（只轉換含 CJK 的）
   function collectTextNodes(root) {
     var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
     var nodes = [];
@@ -44,31 +42,21 @@
     return nodes;
   }
 
-  var converter = null;
-  function getConverter(to) {
-    // to: 'cn' 繁→簡, 'tw' 簡→繁
-    if (!window.OpenCC) return null;
-    if (!converter || converter._to !== to) {
-      converter =
-        to === "cn"
-          ? window.OpenCC.Converter({ from: "tw", to: "cn" })
-          : window.OpenCC.Converter({ from: "cn", to: "tw" });
-      converter._to = to;
+  var converterCn = null; // tw -> cn
+  function getConverterCn() {
+    if (!converterCn) {
+      converterCn = window.OpenCC.Converter({ from: "tw", to: "cn" });
     }
-    return converter;
+    return converterCn;
   }
 
   function applyLang(lang) {
-    var cvt = getConverter(lang);
-    if (!cvt) return;
     var nodes = collectTextNodes(document.body);
     for (var i = 0; i < nodes.length; i++) {
-      // 記住原始繁體文字，避免重複轉換造成漂移
-      if (!nodes[i]._origTw) nodes[i]._origTw = nodes[i].nodeValue;
-      var src = lang === "tw" ? nodes[i]._origTw : nodes[i]._origTw;
-      nodes[i].nodeValue = lang === "cn" ? cvt.convert(src) : src;
+      if (nodes[i]._origTw === undefined) nodes[i]._origTw = nodes[i].nodeValue;
+      nodes[i].nodeValue =
+        lang === "cn" ? getConverterCn().convert(nodes[i]._origTw) : nodes[i]._origTw;
     }
-    // 同步 <html lang> 與按鈕標籤
     document.documentElement.lang = lang === "cn" ? "zh-CN" : "zh-TW";
     if (label) label.textContent = lang === "cn" ? "简" : "繁";
     try {
@@ -84,39 +72,41 @@
     }
   }
 
-  if (btn) {
-    btn.addEventListener("click", function () {
-      var next = currentPref() === "tw" ? "cn" : "tw";
-      applyLang(next);
+  // 動態載入 OpenCC，載入完成後才啟用按鈕
+  function loadOpenCC(cb) {
+    if (window.OpenCC) {
+      cb();
+      return;
+    }
+    var s = document.createElement("script");
+    s.src = CDN_URL;
+    s.onload = cb;
+    s.onerror = function () {
+      if (label) label.textContent = "!";
+      if (btn) btn.title = "轉換庫載入失敗";
+    };
+    document.head.appendChild(s);
+  }
+
+  function init() {
+    loadOpenCC(function () {
+      // 套用已存偏好
+      var pref = currentPref();
+      if (pref === "cn") applyLang("cn");
+
+      if (btn) {
+        btn.addEventListener("click", function () {
+          var next = currentPref() === "tw" ? "cn" : "tw";
+          applyLang(next);
+        });
+      }
     });
   }
 
-  // 頁面載入時套用偏好（等 OpenCC 載入完成）
-  function initApply() {
-    var pref = currentPref();
-    if (pref === "cn") {
-      if (window.OpenCC) {
-        applyLang("cn");
-      } else {
-        // CDN 還沒載好，重試幾次
-        var tries = 0;
-        var timer = setInterval(function () {
-          tries++;
-          if (window.OpenCC || tries > 20) {
-            clearInterval(timer);
-            if (window.OpenCC) applyLang("cn");
-          }
-        }, 250);
-      }
-    } else {
-      if (label) label.textContent = "繁";
-    }
-  }
-
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initApply);
+    document.addEventListener("DOMContentLoaded", init);
   } else {
-    initApply();
+    init();
   }
 })();
 </script>
