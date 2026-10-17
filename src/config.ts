@@ -57,6 +57,21 @@ export const profileConfig: ProfileConfig = {
 			icon: "fa6-brands:github",
 			url: "https://github.com/ouneedtech",
 		},
+		{
+			name: "Telegram",
+			icon: "fa6-brands:telegram",
+			url: "https://telegram.org",
+		},
+		{
+			name: "Steam",
+			icon: "fa6-brands:steam",
+			url: "https://store.steampowered.com",
+		},
+		{
+			name: "X",
+			icon: "fa6-brands:x-twitter",
+			url: "https://x.com",
+		},
 	],
 };
 
