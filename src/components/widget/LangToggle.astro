@@ -1,6 +1,7 @@
 ---
 // 簡繁切換按鈕 — 使用 OpenCC 做前端實時轉換
 // 預設為繁體（與文章原始語言一致），切換偏好存 localStorage
+// OpenCC 庫通過下方 <script src> 同步加載，保證執行順序
 ---
 <button
   id="lang-toggle"
@@ -11,12 +12,14 @@
   <span id="lang-toggle-label" class="text-sm font-bold">繁</span>
 </button>
 
+<script src="/lib/opencc-full.js"></script>
 <script is:inline>
 (function () {
-  var STORAGE_KEY = "blog-lang-pref"; // 'tw' | 'cn'
-  var LIB_URL = "/lib/opencc-full.js";
+  var STORAGE_KEY = "blog-lang-pref";
   var label = document.getElementById("lang-toggle-label");
   var btn = document.getElementById("lang-toggle");
+
+  if (!btn) return;
 
   var SKIP_TAGS = { SCRIPT: 1, STYLE: 1, PRE: 1, CODE: 1, TEXTAREA: 1 };
 
@@ -42,7 +45,7 @@
     return nodes;
   }
 
-  var converterCn = null; // tw -> cn
+  var converterCn = null;
   function getConverterCn() {
     if (!converterCn) {
       converterCn = window.OpenCC.Converter({ from: "tw", to: "cn" });
@@ -51,6 +54,10 @@
   }
 
   function applyLang(lang) {
+    if (lang === "cn" && !window.OpenCC) {
+      if (label) label.textContent = "!";
+      return;
+    }
     var nodes = collectTextNodes(document.body);
     for (var i = 0; i < nodes.length; i++) {
       if (nodes[i]._origTw === undefined) nodes[i]._origTw = nodes[i].nodeValue;
@@ -72,41 +79,15 @@
     }
   }
 
-  // 動態載入 OpenCC，載入完成後才啟用按鈕
-  function loadOpenCC(cb) {
-    if (window.OpenCC) {
-      cb();
-      return;
-    }
-    var s = document.createElement("script");
-    s.src = LIB_URL;
-    s.onload = cb;
-    s.onerror = function () {
-      if (label) label.textContent = "!";
-      if (btn) btn.title = "轉換庫載入失敗";
-    };
-    document.head.appendChild(s);
+  // OpenCC 是同步加載的，到這裡應該已經可用
+  // 如果偏好是簡體，直接套用
+  if (currentPref() === "cn" && window.OpenCC) {
+    applyLang("cn");
   }
 
-  function init() {
-    loadOpenCC(function () {
-      // 套用已存偏好
-      var pref = currentPref();
-      if (pref === "cn") applyLang("cn");
-
-      if (btn) {
-        btn.addEventListener("click", function () {
-          var next = currentPref() === "tw" ? "cn" : "tw";
-          applyLang(next);
-        });
-      }
-    });
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
-  } else {
-    init();
-  }
+  btn.addEventListener("click", function () {
+    var next = currentPref() === "tw" ? "cn" : "tw";
+    applyLang(next);
+  });
 })();
 </script>
