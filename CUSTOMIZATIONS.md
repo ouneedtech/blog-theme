@@ -146,3 +146,15 @@
 - 原因：不希望文章被腳本直接從 GitHub 批量扒取，希望流量走博客站
 - GitHub Actions 自動部署不受影響（用 PAT 拉取私有倉庫正常）
 - 注意：博客頁腳/關於頁的 GitHub 圖標鏈接對訪客會 404，如需對外展示可改為其他鏈接
+
+## 八、雙倉庫架構（2026-10-17 新增）
+
+| 倉庫 | 可見性 | 內容 | 用途 |
+| --- | --- | --- | --- |
+| `ouneedtech/blog` | 私有 | 完整博客（含文章） | 實際部署用，GitHub Actions 自動部署到 Cloudflare Pages |
+| `ouneedtech/blog-theme` | 公開 | 純主題（不含文章） | 對外展示，博客上的 GitHub 鏈接指向此倉庫 |
+
+同步腳本：`~/workspace/bin/sync-blog-theme.sh [commit-message]`
+- 一次推送兩個倉庫
+- 公開倉庫自動排除 `src/content/posts/*.md`（保留 README.md 說明）
+- 用法：改完 blog 後跑 `./sync-blog-theme.sh "改動說明"`
