@@ -7,6 +7,10 @@ category: "技術"
 draft: false
 ---
 
+> 🚀 **在線體驗**：[https://2fa.ouneed.kdns.fr](https://2fa.ouneed.kdns.fr) —— 本文中介紹的自託管 TOTP 驗證器，打开即用。
+
+---
+
 ## 0. TL;DR：先給結論
 
 | 問題 | 結論 |
