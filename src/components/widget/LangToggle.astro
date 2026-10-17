@@ -86,6 +86,10 @@
   }
 
   btn.addEventListener("click", function () {
+    // 調試：先變色確認事件觸發
+    btn.style.background = "#ff0";
+    setTimeout(function () { btn.style.background = ""; }, 500);
+
     var next = currentPref() === "tw" ? "cn" : "tw";
     applyLang(next);
   });
