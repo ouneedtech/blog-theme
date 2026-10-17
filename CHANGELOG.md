@@ -34,3 +34,8 @@
 - About 页新增 GitHub 风格个人卡片（头像 + ouneedtech + 仓库/收藏按钮）
 - 字体优化：引入 Noto Sans TC（Google Fonts），字体栈增加 PingFang TC / Microsoft JhengHei  fallback
 - 设置面板新增「字體大小」（90%~125%）和「字體粗細」（400~600）滑动条，localStorage 持久化，默认字重 440
+
+## 2026-10-16 字体更换+滑条修复
+- 正文字体换为 Huninn（jf open 粉圓，justfont 为台湾设计的开源繁体字，OFL 免费可商用，Google Fonts 加载）
+- 修复字号/粗细滑条无响应：Svelte 5 下 $: 响应式改写为 $state + oninput 显式事件
+- 字重 CSS 覆盖范围扩大到 .prose/article 正文

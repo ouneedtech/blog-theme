@@ -2,7 +2,7 @@
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import Icon from "@iconify/svelte";
-import { getDefaultHue, getHue, setHue, getFontScale, setFontScale, getFontWeightBoost, setFontWeightBoost } from "@utils/setting-utils";
+import { getDefaultHue, getHue, setHue, getFontScale, setFontScale, getFontWeightBoost, setFontWeightBoost, getFontFamily, setFontFamily } from "@utils/setting-utils";
 
 let hue = $state(getHue());
 const defaultHue = getDefaultHue();
@@ -11,6 +11,13 @@ let fontScale = $state(getFontScale());
 let fontWeightBoost = $state(getFontWeightBoost());
 const defaultFontScale = 1.0;
 const defaultFontWeightBoost = 40;
+
+let fontFamily = $state(getFontFamily());
+
+function setFont(family: string) {
+	fontFamily = family;
+	setFontFamily(family);
+}
 
 function resetHue() {
 	hue = getDefaultHue();
@@ -69,6 +76,38 @@ function resetFontWeight() {
         <input aria-label={i18n(I18nKey.themeColor)} type="range" min="0" max="360" value={hue}
                oninput={onHueInput}
                class="slider" id="colorSlider" step="5" style="width: 100%">
+    </div>
+
+    <!-- 字体选择 -->
+    <div class="flex flex-row gap-2 mb-3 items-center justify-between">
+        <div class="flex gap-2 font-bold text-lg text-neutral-900 dark:text-neutral-100 transition relative ml-3
+            before:w-1 before:h-4 before:rounded-md before:bg-[var(--primary)]
+            before:absolute before:-left-3 before:top-[0.33rem]"
+        >
+            {i18n(I18nKey.fontFamily)}
+        </div>
+    </div>
+    <div class="flex gap-2 mb-4">
+        <button
+            class="flex-1 py-2 px-3 rounded-lg text-sm font-medium transition active:scale-95"
+            class:bg-[var(--primary)]={fontFamily === 'system'}
+            class:text-white={fontFamily === 'system'}
+            class:bg-[var(--btn-regular-bg)]={fontFamily !== 'system'}
+            class:text-[var(--btn-content)]={fontFamily !== 'system'}
+            onclick={() => setFont('system')}
+        >
+            {i18n(I18nKey.fontSystem)}
+        </button>
+        <button
+            class="flex-1 py-2 px-3 rounded-lg text-sm font-medium transition active:scale-95"
+            class:bg-[var(--primary)]={fontFamily === 'beautified'}
+            class:text-white={fontFamily === 'beautified'}
+            class:bg-[var(--btn-regular-bg)]={fontFamily !== 'beautified'}
+            class:text-[var(--btn-content)]={fontFamily !== 'beautified'}
+            onclick={() => setFont('beautified')}
+        >
+            {i18n(I18nKey.fontBeautified)}
+        </button>
     </div>
 
     <!-- 字体大小 -->

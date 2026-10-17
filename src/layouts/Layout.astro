@@ -101,9 +101,6 @@ const bannerOffset =
 
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<link rel="preconnect" href="https://fonts.googleapis.com">
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Huninn:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
 		{favicons.map(favicon => (
 			<link rel="icon"
 				  href={favicon.src.startsWith('/') ? url(favicon.src) : favicon.src}
@@ -113,6 +110,20 @@ const bannerOffset =
 		))}
 
 		<!-- Set the theme before the page is rendered to avoid a flash -->
+		<style is:inline>
+			/* Huninn 自托管：僅在用戶選擇美化字體時才會下載 woff2（瀏覽器按需加載） */
+			@font-face {
+				font-family: 'Huninn';
+				src: url('/fonts/huninn-400.woff2') format('woff2');
+				font-weight: 400;
+				font-style: normal;
+				font-display: swap;
+			}
+			/* 美化字體模式：html 帶 .font-beautified 類時啟用 */
+			html.font-beautified body {
+				font-family: 'Huninn', 'Noto Sans TC', 'PingFang TC', 'Hiragino Sans CNS', 'Microsoft JhengHei', sans-serif;
+			}
+		</style>
 		<script is:inline define:vars={{DEFAULT_THEME, LIGHT_MODE, DARK_MODE, AUTO_MODE, BANNER_HEIGHT_EXTEND, PAGE_WIDTH, configHue}}>
 			// Load the theme from local storage
 			const theme = localStorage.getItem('theme') || DEFAULT_THEME;
@@ -134,6 +145,13 @@ const bannerOffset =
 			// Load the hue from local storage
 			const hue = localStorage.getItem('hue') || configHue;
 			document.documentElement.style.setProperty('--hue', hue);
+
+			// Load the font family preference from local storage (before render to avoid flash)
+			// 默認系統字體，用戶可在顯示設置中切換為美化字體
+			const fontFamily = localStorage.getItem('font-family') || 'system';
+			if (fontFamily === 'beautified') {
+				document.documentElement.classList.add('font-beautified');
+			}
 
 			// calculate the --banner-height-extend, which needs to be a multiple of 4 to avoid blurry text
 			let offset = Math.floor(window.innerHeight * (BANNER_HEIGHT_EXTEND / 100));

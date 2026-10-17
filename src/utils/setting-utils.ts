@@ -98,3 +98,25 @@ export function applyFontSettingsToDocument(): void {
 	r.style.setProperty("--font-scale", String(getFontScale()));
 	r.style.setProperty("--font-weight-boost", String(getFontWeightBoost()));
 }
+
+// 字體選擇：'system'（默認系統字體）或 'beautified'（Huninn 美化字體）
+export function getFontFamily(): string {
+	return localStorage.getItem("font-family") || "system";
+}
+
+export function setFontFamily(family: string): void {
+	localStorage.setItem("font-family", family);
+	if (family === "beautified") {
+		document.documentElement.classList.add("font-beautified");
+	} else {
+		document.documentElement.classList.remove("font-beautified");
+	}
+}
+
+export function applyFontFamilyToDocument(): void {
+	if (getFontFamily() === "beautified") {
+		document.documentElement.classList.add("font-beautified");
+	} else {
+		document.documentElement.classList.remove("font-beautified");
+	}
+}

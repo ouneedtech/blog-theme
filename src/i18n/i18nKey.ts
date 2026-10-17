@@ -24,6 +24,9 @@ enum I18nKey {
 	themeColor = "themeColor",
 	fontSize = "fontSize",
 	fontWeight = "fontWeight",
+	fontFamily = "fontFamily",
+	fontSystem = "fontSystem",
+	fontBeautified = "fontBeautified",
 
 	lightMode = "lightMode",
 	darkMode = "darkMode",

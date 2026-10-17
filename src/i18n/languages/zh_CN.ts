@@ -35,4 +35,7 @@ export const zh_CN: Translation = {
 	[Key.author]: "作者",
 	[Key.publishedAt]: "发布于",
 	[Key.license]: "许可协议",
+	[Key.fontFamily]: "字体",
+	[Key.fontSystem]: "系统字体",
+	[Key.fontBeautified]: "美化字体",
 };

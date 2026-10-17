@@ -6,7 +6,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Roboto", "Huninn", "Noto Sans TC", "PingFang TC", "Hiragino Sans CNS", "Microsoft JhengHei", "sans-serif", ...defaultTheme.fontFamily.sans],
+        sans: ["Roboto", "PingFang TC", "Hiragino Sans CNS", "Microsoft JhengHei", "sans-serif", ...defaultTheme.fontFamily.sans],
       },
     },
   },
