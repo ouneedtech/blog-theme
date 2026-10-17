@@ -14,7 +14,7 @@
 <script is:inline>
 (function () {
   var STORAGE_KEY = "blog-lang-pref"; // 'tw' | 'cn'
-  var CDN_URL = "https://cdn.jsdelivr.net/npm/opencc-js@1.0.5/dist/umd/full.js";
+  var LIB_URL = "/lib/opencc-full.js";
   var label = document.getElementById("lang-toggle-label");
   var btn = document.getElementById("lang-toggle");
 
@@ -79,7 +79,7 @@
       return;
     }
     var s = document.createElement("script");
-    s.src = CDN_URL;
+    s.src = LIB_URL;
     s.onload = cb;
     s.onerror = function () {
       if (label) label.textContent = "!";
