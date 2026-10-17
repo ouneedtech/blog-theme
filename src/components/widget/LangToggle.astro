@@ -46,6 +46,7 @@
   var converterCn = null;
   function getConverterCn() {
     if (!converterCn) {
+      // opencc-js 的 Converter() 返回的是可直接調用的函數，不是帶 .convert 方法的對象
       converterCn = window.OpenCC.Converter({ from: "tw", to: "cn" });
     }
     return converterCn;
@@ -53,10 +54,10 @@
 
   function applyLang(lang) {
     var nodes = collectTextNodes(document.body);
+    var convert = lang === "cn" ? getConverterCn() : null;
     for (var i = 0; i < nodes.length; i++) {
       if (nodes[i]._origTw === undefined) nodes[i]._origTw = nodes[i].nodeValue;
-      nodes[i].nodeValue =
-        lang === "cn" ? getConverterCn().convert(nodes[i]._origTw) : nodes[i]._origTw;
+      nodes[i].nodeValue = convert ? convert(nodes[i]._origTw) : nodes[i]._origTw;
     }
     document.documentElement.lang = lang === "cn" ? "zh-CN" : "zh-TW";
     if (label) label.textContent = lang === "cn" ? "简" : "繁";
