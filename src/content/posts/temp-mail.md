@@ -7,7 +7,7 @@ category: "技術"
 draft: false
 ---
 
-> 📮 **在線體驗**：[https://temp-mail-7tt.pages.dev](https://temp-mail-7tt.pages.dev) —— 本文中介紹的自託管臨時郵局，打开即用。
+> 📮 **在線體驗**：[https://mail.ouneed.kdns.fr](https://mail.ouneed.kdns.fr) —— 本文中介紹的自託管臨時郵局，打开即用。
 
 ---
 
