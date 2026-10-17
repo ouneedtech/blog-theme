@@ -88,6 +88,14 @@
 | --- | --- |
 | `src/content/posts/2fa-totp-vault.md` | 自託管 TOTP 驗證器介紹（2026-10-17） |
 | `src/content/posts/temp-mail.md` | 自託管臨時郵箱介紹（2026-10-17） |
+| `src/content/posts/tcompactprotocol-mobile-rpc-reverse-engineering.md` | 手寫 TCompactProtocol 逆向實踐（原 wintersynq.com ID 188，2026-10-17 搬運，已去關聯化） |
+| `src/content/posts/flutter-taskwall-protocol-research.md` | Flutter 任務牆協議逆向（原 wintersynq.com ID 229，2026-10-17 搬運，已去關聯化） |
+| `src/content/posts/redis-nemesis-format-string-timing-side-channel.md` | Redis Nemesis 利用報告（原 wintersynq.com ID 237，2026-10-17 搬運，已去關聯化） |
+
+**搬運說明（2026-10-17）**：
+- 原站 wintersynq.com（16.176.15.84 WordPress）的三篇文章已搬運至新博客
+- 搬運時已清除所有與原博客相關的內容（wintersynq.com 鏈接、站名提及）
+- 原站文章已設為 `draft`（隱藏未刪除），備份在服務器 `~/wintersynq-backup-20261017/posts-backup.tsv`
 
 ---
 
