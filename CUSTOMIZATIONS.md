@@ -125,3 +125,24 @@
 - OpenCC 完整庫 1.1MB，僅在用戶首次切換到簡體時下載
 - Huninn 只有 400 字重，加粗靠瀏覽器合成
 - `src/version.ts` 是構建時生成的，不要手動編輯，已加入 `.gitignore`
+
+---
+
+## 六、瀏覽量統計（2026-10-17 新增）
+
+| 項目 | 說明 |
+| --- | --- |
+| Worker | `blog-views`（https://blog-views.elewis113.workers.dev） |
+| D1 | `blog-views`（4bf3c568-e9cc-482f-90c1-822a2e404b44） |
+| 源碼 | `~/workspace/blog-views/`（worker.js + schema.sql，不在博客倉庫） |
+| 表結構 | `views(path, count)`、`hits(path, ip, day)`（去重用） |
+| 去重規則 | 同一 IP 同一天同一文章只計一次 |
+| 顯示位置 | 文章頁 PostMeta（"X 次瀏覽"）、頁腳（"總瀏覽 X 次"） |
+| API | `POST /hit {path}`、`GET /count?path=`、`GET /batch`、`GET /total` |
+
+## 七、倉庫可見性
+
+- 2026-10-17 起 `ouneedtech/blog` 轉為 **私有倉庫**
+- 原因：不希望文章被腳本直接從 GitHub 批量扒取，希望流量走博客站
+- GitHub Actions 自動部署不受影響（用 PAT 拉取私有倉庫正常）
+- 注意：博客頁腳/關於頁的 GitHub 圖標鏈接對訪客會 404，如需對外展示可改為其他鏈接
