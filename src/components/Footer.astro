@@ -20,7 +20,7 @@ const currentYear = new Date().getFullYear();
         <span class="text-xs opacity-50">總瀏覽 <span id="site-views">-</span> 次</span>
 <script is:inline>
 (function() {
-    fetch('https://blog-views.elewis113.workers.dev/total')
+    fetch('https://blog-views.x7k2m9q4test.workers.dev/total')
         .then(function(r) { return r.json(); })
         .then(function(d) {
             var el = document.getElementById('site-views');
