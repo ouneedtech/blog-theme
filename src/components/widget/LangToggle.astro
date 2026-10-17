@@ -1,7 +1,6 @@
 ---
 // 簡繁切換按鈕 — 使用 OpenCC 做前端實時轉換
 // 預設為繁體（與文章原始語言一致），切換偏好存 localStorage
-// OpenCC 庫通過下方 <script src> 同步加載，保證執行順序
 ---
 <button
   id="lang-toggle"
@@ -12,13 +11,12 @@
   <span id="lang-toggle-label" class="text-sm font-bold">繁</span>
 </button>
 
-<script is:inline src="/lib/opencc-full.js"></script>
 <script is:inline>
 (function () {
   var STORAGE_KEY = "blog-lang-pref";
+  var LIB_URL = "/lib/opencc-full.js";
   var label = document.getElementById("lang-toggle-label");
   var btn = document.getElementById("lang-toggle");
-
   if (!btn) return;
 
   var SKIP_TAGS = { SCRIPT: 1, STYLE: 1, PRE: 1, CODE: 1, TEXTAREA: 1 };
@@ -54,10 +52,6 @@
   }
 
   function applyLang(lang) {
-    if (lang === "cn" && !window.OpenCC) {
-      if (label) label.textContent = "!";
-      return;
-    }
     var nodes = collectTextNodes(document.body);
     for (var i = 0; i < nodes.length; i++) {
       if (nodes[i]._origTw === undefined) nodes[i]._origTw = nodes[i].nodeValue;
@@ -79,19 +73,54 @@
     }
   }
 
-  // OpenCC 是同步加載的，到這裡應該已經可用
-  // 如果偏好是簡體，直接套用
-  if (currentPref() === "cn" && window.OpenCC) {
-    applyLang("cn");
+  // 異步加載 OpenCC，不阻塞；加載完成後如果偏好是簡體則套用
+  var openCCReady = false;
+  var pendingLang = null;
+
+  function ensureOpenCC(cb) {
+    if (window.OpenCC) {
+      openCCReady = true;
+      cb();
+      return;
+    }
+    if (pendingLang) {
+      // 已經在加載中，把回調排隊
+      var prev = pendingLang;
+      pendingLang = function () { prev(); cb(); };
+      return;
+    }
+    pendingLang = cb;
+    var s = document.createElement("script");
+    s.src = LIB_URL;
+    s.async = true;
+    s.onload = function () {
+      openCCReady = true;
+      var f = pendingLang;
+      pendingLang = null;
+      if (f) f();
+    };
+    s.onerror = function () {
+      pendingLang = null;
+      if (label) label.textContent = "!";
+      if (btn) btn.title = "轉換庫載入失敗";
+    };
+    document.head.appendChild(s);
   }
 
+  // 點擊事件立即綁定，不等庫加載
   btn.addEventListener("click", function () {
-    // 調試：先變色確認事件觸發
-    btn.style.background = "#ff0";
-    setTimeout(function () { btn.style.background = ""; }, 500);
-
     var next = currentPref() === "tw" ? "cn" : "tw";
-    applyLang(next);
+    if (next === "tw") {
+      // 切回繁體不需要庫
+      applyLang("tw");
+    } else {
+      ensureOpenCC(function () { applyLang("cn"); });
+    }
   });
+
+  // 頁面載入時若偏好是簡體，後台加載庫並套用
+  if (currentPref() === "cn") {
+    ensureOpenCC(function () { applyLang("cn"); });
+  }
 })();
 </script>
