@@ -1,0 +1,122 @@
+---
+// 簡繁切換按鈕 — 使用 OpenCC 做前端實時轉換
+// 預設為繁體（與文章原始語言一致），切換偏好存 localStorage
+---
+<button
+  id="lang-toggle"
+  aria-label="簡繁切換"
+  title="簡繁切換"
+  class="btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90 flex items-center justify-center"
+>
+  <span id="lang-toggle-label" class="text-sm font-bold">繁</span>
+</button>
+
+<script is:inline src="https://cdn.jsdelivr.net/npm/opencc-js@1.0.5/dist/umd/full.js"></script>
+<script is:inline>
+(function () {
+  var STORAGE_KEY = "blog-lang-pref"; // 'tw' | 'cn'
+  var label = document.getElementById("lang-toggle-label");
+  var btn = document.getElementById("lang-toggle");
+
+  // 哪些元素不轉換：程式碼區塊、pre、script、style
+  var SKIP_TAGS = { SCRIPT: 1, STYLE: 1, PRE: 1, CODE: 1, TEXTAREA: 1 };
+
+  function shouldSkip(node) {
+    var el = node.parentElement;
+    while (el) {
+      if (SKIP_TAGS[el.tagName]) return true;
+      el = el.parentElement;
+    }
+    return false;
+  }
+
+  // 收集需要轉換的文字節點（只轉換含 CJK 的）
+  function collectTextNodes(root) {
+    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+    var nodes = [];
+    var node;
+    var cjk = /[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]/;
+    while ((node = walker.nextNode())) {
+      if (!shouldSkip(node) && cjk.test(node.nodeValue)) {
+        nodes.push(node);
+      }
+    }
+    return nodes;
+  }
+
+  var converter = null;
+  function getConverter(to) {
+    // to: 'cn' 繁→簡, 'tw' 簡→繁
+    if (!window.OpenCC) return null;
+    if (!converter || converter._to !== to) {
+      converter =
+        to === "cn"
+          ? window.OpenCC.Converter({ from: "tw", to: "cn" })
+          : window.OpenCC.Converter({ from: "cn", to: "tw" });
+      converter._to = to;
+    }
+    return converter;
+  }
+
+  function applyLang(lang) {
+    var cvt = getConverter(lang);
+    if (!cvt) return;
+    var nodes = collectTextNodes(document.body);
+    for (var i = 0; i < nodes.length; i++) {
+      // 記住原始繁體文字，避免重複轉換造成漂移
+      if (!nodes[i]._origTw) nodes[i]._origTw = nodes[i].nodeValue;
+      var src = lang === "tw" ? nodes[i]._origTw : nodes[i]._origTw;
+      nodes[i].nodeValue = lang === "cn" ? cvt.convert(src) : src;
+    }
+    // 同步 <html lang> 與按鈕標籤
+    document.documentElement.lang = lang === "cn" ? "zh-CN" : "zh-TW";
+    if (label) label.textContent = lang === "cn" ? "简" : "繁";
+    try {
+      localStorage.setItem(STORAGE_KEY, lang);
+    } catch (e) {}
+  }
+
+  function currentPref() {
+    try {
+      return localStorage.getItem(STORAGE_KEY) || "tw";
+    } catch (e) {
+      return "tw";
+    }
+  }
+
+  if (btn) {
+    btn.addEventListener("click", function () {
+      var next = currentPref() === "tw" ? "cn" : "tw";
+      applyLang(next);
+    });
+  }
+
+  // 頁面載入時套用偏好（等 OpenCC 載入完成）
+  function initApply() {
+    var pref = currentPref();
+    if (pref === "cn") {
+      if (window.OpenCC) {
+        applyLang("cn");
+      } else {
+        // CDN 還沒載好，重試幾次
+        var tries = 0;
+        var timer = setInterval(function () {
+          tries++;
+          if (window.OpenCC || tries > 20) {
+            clearInterval(timer);
+            if (window.OpenCC) applyLang("cn");
+          }
+        }, 250);
+      }
+    } else {
+      if (label) label.textContent = "繁";
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initApply);
+  } else {
+    initApply();
+  }
+})();
+</script>
